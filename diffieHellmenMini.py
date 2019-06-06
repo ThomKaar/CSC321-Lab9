@@ -41,14 +41,16 @@ def sym_input(AorB, aorb, p):
 # Given a sha256 hash and a int as bytes return the hashed int
 def generate_key(hash, s_input):
    hash.update(s_input)
-   return hash.digest()
+   return hash.digest()[:32]
 
 # Given a message and a key that is 16 bytes long, build an AES-Cipher in CBC mode
 def buildCipher(message, key):
    rand_file = Random.new()
    aes_obj = AES.new(key, AES.MODE_CBC, rand_file.read(16))
-   return aes.obj.encrypt(message)
-
+   cipher = ""
+   i = 0
+   
+   return cipher
 
 if __name__ == '__main__':
    main()
