@@ -26,14 +26,14 @@ def main():
    print()
    # We now have symmetric keys
    
-   alice_cipher = buildCipher("Hi Bob!", sym_key_Alice)
-   bob_cipher = buildCipher("Hi Alice!", sym_key_Bob)
+   alice_iv, alice_cipher = buildCipher("Hi Bob!", sym_key_Alice)
+   bob_iv, bob_cipher = buildCipher("Hi Alice!", sym_key_Bob)
    print('Alice Hi Encrypted: {}\nBob Hi Encrypted: {}'.format(alice_cipher, bob_cipher))
    
-   alice_decrypted = aes_decrypt(alice_cipher, sym_key_Bob)
-   bob_decrypted = aes_decrypt(bob_cipher, sym_key_Alice)
-   print(alice_decrypted)
-   print(bob_decrypted)
+   alice_decrypted = aes_decrypt(alice_cipher, sym_key_Bob, alice_iv)
+   bob_decrypted = aes_decrypt(bob_cipher, sym_key_Alice, bob_iv)
+   print('Alice Hi Decrypted: {}'.format(alice_decrypted))
+   print('Bob Hi Decrypted: {}'.format(bob_decrypted))
 
 # Given a p and g value choose a random int between 1 and p-2 
 # and return (g**random_int) % p and random_int
@@ -55,7 +55,7 @@ def buildCipher(message, key):
    rand_file = Random.new()
    iv = rand_file.read(16)
    cipher = aes_encrypt(message, key, iv)
-   return cipher
+   return iv, cipher
 
 # AES encrypt the message with the given key and IV
 def aes_encrypt(message, key, iv):
