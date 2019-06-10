@@ -38,26 +38,15 @@ def main():
    sym_key_MBob = generate_key(SHA256.new(), long_to_bytes(s_input_MB))
 
 
-   print('Alice Key: {}\nBob Key: {}'.format(sym_key_Alice, sym_key_Bob))
-   print()
    # We now have symmetric keys
    
    alice_iv, alice_cipher = buildCipher("Hi Bob!", sym_key_Alice)
    bob_iv, bob_cipher = buildCipher("Hi Alice!", sym_key_Bob)
-   print('Alice Hi Encrypted: {}\nBob Hi Encrypted: {}'.format(alice_cipher, bob_cipher))
    
-   # First let's try it the old way to make sure the two can't speak hehehe...
-   alice_decrypted = aes_decrypt(alice_cipher, sym_key_Bob, alice_iv)
-   bob_decrypted = aes_decrypt(bob_cipher, sym_key_Alice, bob_iv)
-  
-   print('\n\nDecrypting using the wrong keys to show Alice and Bob cannot speak w/o Mallory')
-   print('Alice Hi Decrypted: {}'.format(alice_decrypted))
-   print('Bob Hi Decrypted: {}'.format(bob_decrypted))
-
-   # Now let's use Mallory's evil keys
+      # Now let's use Mallory's evil keys
    alice_decrypted = aes_decrypt(alice_cipher, sym_key_MBob, alice_iv)
    bob_decrypted = aes_decrypt(bob_cipher, sym_key_MAlice, bob_iv)
-   print("\n\nDecrypting with Mallory's evil keys")
+   print("Decrypting with Mallory's evil keys")
    print('Alice Hi Decrypted: {}'.format(alice_decrypted))
    print('Bob Hi Decrypted: {}'.format(bob_decrypted))
    
