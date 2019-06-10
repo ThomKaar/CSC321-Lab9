@@ -7,23 +7,20 @@ import Crypto.Random.random as rand
 from Crypto.Util.number import long_to_bytes
 # execute key exchange
 def main():
-   p = b'B10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4371'
- 
-   g = b'A4D1CBD5C3FD34126765A442EFB99905F8104DD258AC507FD6406CFF14266D31266FEA1E5C41564B777E690F5504F213160217B4B01B886A5E91547F9E2749F4D7FBD7D3B9A92EE1909D0D2263F80A76A6A24C087A091F531DBF0A0169B6A28AD662A4D18E73AFA32D779D5918D08BC8858F4DCEF97C2A24855E6EEB22B3B2E5'
+   p = 37
+   g = 1
+   # g = 1
+   # g = p - 1
 
    
    # A = g**(randomInt) % p
    # a = randomInt
-   A, a = pickABbytes(p, g)
+   A, a = pickAB(p, g)
    
    # B = g**(randomInt) % p
    # b = randomInt   
-   B, b = pickABbytes(p, g)
+   B, b = pickAB(p, g)
 
-
-   g = 1
-   # g = p
-   # g = p - 1
    # Now here comes the big bad Mallory... dun dun duuuuun
    MA, ma = pickAB(p, g)
    MB, mb = pickAB(p, g)
@@ -36,9 +33,10 @@ def main():
    
    sym_key_Alice = generate_key(SHA256.new(), long_to_bytes(s_input_Alice))
    sym_key_MAlice = generate_key(SHA256.new(), long_to_bytes(s_input_MA))
-
+ 
    sym_key_Bob = generate_key(SHA256.new(), long_to_bytes(s_input_Bob))
    sym_key_MBob = generate_key(SHA256.new(), long_to_bytes(s_input_MB))
+
 
    print('Alice Key: {}\nBob Key: {}'.format(sym_key_Alice, sym_key_Bob))
    print()
@@ -57,8 +55,8 @@ def main():
    print('Bob Hi Decrypted: {}'.format(bob_decrypted))
 
    # Now let's use Mallory's evil keys
-   alice_decrypted = aes_decrypt(alice_cipher, sym_key_MAlice, alice_iv)
-   bob_decrypted = aes_decrypt(bob_cipher, sym_key_MBob, bob_iv)
+   alice_decrypted = aes_decrypt(alice_cipher, sym_key_MBob, alice_iv)
+   bob_decrypted = aes_decrypt(bob_cipher, sym_key_MAlice, bob_iv)
    print("\n\nDecrypting with Mallory's evil keys")
    print('Alice Hi Decrypted: {}'.format(alice_decrypted))
    print('Bob Hi Decrypted: {}'.format(bob_decrypted))
@@ -66,12 +64,12 @@ def main():
 # Given a p and g value choose a random int between 1 and p-2 
 # and return (g**random_int) % p and random_int
 def pickAB(p, g):
-   ab = rand.randint(1, int.from_bytes(p, "big")-2)
-   return pow(g,ab, int.from_bytes(p, "big")), ab   
+   ab = rand.randint(1, p-2)
+   return pow(g,ab, p), ab   
 
 # Given A or B and a or b return (A**b) % p or (B**b) % p 
 def sym_input(AorB, aorb, p):
-   return pow(AorB, aorb, int.from_bytes(p, "big"))
+   return pow(AorB, aorb, p)
 
 # Given a sha256 hash and a int as bytes return the hashed int
 def generate_key(hash, s_input):
